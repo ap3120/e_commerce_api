@@ -9,6 +9,30 @@ const pool = new Pool({
     port: 5432,
 })
 
+const getPasswordFromEmail = (email) => {
+    return new Promise((resolve, reject) => {
+        pool.query('select * from users where email = $1', [email], (err, results) => {
+            if (err) {throw err;}
+            if (results.rows.length === 0) {reject(new Error('An error occured.'))}
+            else {
+                const user = results.rows[0].email;
+                if (!user){
+                    reject(new Error('User not found'));
+                } else {
+                    resolve([
+                        results.rows[0].id,
+                        results.rows[0].password
+                    ]);
+                }
+            }
+        });
+    });
+}
+
+const findUserFromEmail = async (email) => {
+    return await getPasswordFromEmail(email);
+}
+
 const getUsers = (req, res) => {
     pool.query('select * from users order by id asc', (err, results) => {
         if (err) {throw err;}
@@ -130,6 +154,7 @@ const deleteProduct = (req, res) => {
 }
 
 module.exports = {
+    findUserFromEmail,
     getUsers,
     getUserById,
     createUser,

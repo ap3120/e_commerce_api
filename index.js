@@ -7,6 +7,7 @@ const app = express();
 const session = require('express-session');
 
 const {
+    findUserFromEmail,
     getUsers,
     getUserById,
     createUser,
@@ -30,10 +31,40 @@ const routeCall = (req, res, next) => {
     console.log('Route is called');
     next();
 }
+// Session middleware
+const store = new session.MemoryStore();
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+        maxAge: 1000*60*60*24,
+        secure: true,
+        sameSite: 'none'
+    },
+    resave: false,
+    saveUninitialized: false,
+    store
+}));
 
 //app.use(express.static('./public')); //access files from folder ./public
 // Body parsing
 app.use(bodyParser.json());
+
+// POST request for logging in
+app.post('/login', async (req, res, next) => {
+    const {email, password} = req.body;
+    const [id, userPassword] = await findUserFromEmail(email);
+    if (password === userPassword) {
+        req.session.authenticate = true;
+        req.session.user = {
+            username: email,
+            password: password
+        };
+        console.log(req.session);
+        res.redirect(`/users/${id}`);
+    } else {
+        res.status(403).json({msg: 'Wrong password.'});
+    }
+})
 
 // Routes
 app.get('/', (req, res, next) => {
