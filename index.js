@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const db = require('./queries.js');
 const app = express();
 const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
 const {
     findUserFromEmail,
@@ -18,6 +20,11 @@ const {
     createCart,
     updateCart,
     deleteCart,
+    getOrders,
+    getOrderById,
+    createOrder,
+    updateOrder,
+    deleteOrder,
     getProducts,
     getProductById,
     createProduct,
@@ -37,7 +44,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     cookie: {
         maxAge: 1000*60*60*24,
-        secure: true,
+        secure: false,
         sameSite: 'none'
     },
     resave: false,
@@ -49,22 +56,68 @@ app.use(session({
 // Body parsing
 app.use(bodyParser.json());
 
+// Middleware to initialize passport
+/*
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+})
+
+passport.deserializeUser(async (email, done) => {
+    const [id, userPassword] = await findUserFromEmail(email);
+    done(null, id);
+})
+
+passport.use(new LocalStrategy(async (email, password, done) => {
+    const [id, userPassword] = await findUserFromEmail(email);
+    if (password !== userPassword) return done(null, false);
+    return done(null, id);
+}))
+
+app.get('/login', (req, res) => {
+    res.render('login');
+})
+
+app.get('/profile', (req, res) => {
+    res.render('profile', {user: req.user});
+})
+
+app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), (req, res) => {
+    res.redirect('/profile');
+})
+
+app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+})
+*/
 // POST request for logging in
 app.post('/login', async (req, res, next) => {
     const {email, password} = req.body;
-    const [id, userPassword] = await findUserFromEmail(email);
-    if (password === userPassword) {
-        req.session.authenticate = true;
+    const user = await findUserFromEmail(email);
+    if (password === user.password) {
+        req.session.authenticated = true;
         req.session.user = {
             username: email,
             password: password
         };
         console.log(req.session);
-        res.redirect(`/users/${id}`);
+        res.redirect(`/users/${user.id}`);
     } else {
         res.status(403).json({msg: 'Wrong password.'});
     }
 })
+
+const ensureAuthentication = (req, res, next) => {
+    console.log(req.session.authenticated);
+    if (req.session.authenticated) {
+        return next();
+    } else {
+        res.status(403).json({msg: 'Please login to view this page.'});
+    }
+}
 
 // Routes
 app.get('/', (req, res, next) => {
@@ -78,10 +131,15 @@ app.post('/users', createUser);
 app.put('/users/:id', updateUser);
 app.delete('/users/:id', deleteUser);
 app.get('/carts', getCarts);
-app.get('/users/:id/carts', getCartsByUserId);
-app.post('/carts', createCart);
-app.put('/carts/:id', updateCart);
-app.delete('/carts/:id', deleteCart);
+app.get('/users/:id/carts', ensureAuthentication, getCartsByUserId);
+app.post('/carts', ensureAuthentication, createCart);
+app.put('/carts/:id', ensureAuthentication, updateCart);
+app.delete('/carts/:id', ensureAuthentication, deleteCart);
+app.get('/orders', ensureAuthentication, getOrders);
+app.get('/orders/:id', ensureAuthentication, getOrderById);
+app.post('/orders', createOrder);
+app.put('/orders/:id', ensureAuthentication, updateOrder);
+app.delete('/orders/:id', ensureAuthentication, deleteOrder);
 app.get('/products', getProducts);
 app.get('/products/:id', getProductById);
 app.post('/products', createProduct);

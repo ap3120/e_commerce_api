@@ -9,7 +9,7 @@ const pool = new Pool({
     port: 5432,
 })
 
-const getPasswordFromEmail = (email) => {
+const getUserFromEmail = (email) => {
     return new Promise((resolve, reject) => {
         pool.query('select * from users where email = $1', [email], (err, results) => {
             if (err) {throw err;}
@@ -19,10 +19,7 @@ const getPasswordFromEmail = (email) => {
                 if (!user){
                     reject(new Error('User not found'));
                 } else {
-                    resolve([
-                        results.rows[0].id,
-                        results.rows[0].password
-                    ]);
+                    resolve(results.rows[0]);
                 }
             }
         });
@@ -30,7 +27,7 @@ const getPasswordFromEmail = (email) => {
 }
 
 const findUserFromEmail = async (email) => {
-    return await getPasswordFromEmail(email);
+    return await getUserFromEmail(email);
 }
 
 const getUsers = (req, res) => {
@@ -113,6 +110,46 @@ const deleteCart = (req, res) => {
     })
 }
 
+const getOrders = (req, res) => {
+    pool.query('select * from orders order by order_id asc', (err, results) => {
+        if (err) {throw err;}
+        res.status(200).json(results.rows);
+    })
+}
+
+const getOrderById = (req, res) => {
+    const id = parseInt(req.params.id);
+    pool.query('select * from orders where order_id = $1', [id], (err, results) => {
+        if (err) {throw err;}
+        res.status(200).json(results.rows);
+    })
+}
+
+const createOrder = (req, res) => {
+    const {date, total_price, user_id, cart_id} = req.body;
+    pool.query('insert into orders (date, total_price, user_id, cart_id) values ($1, $2, $3, $4) returning *', [date, total_price, user_id, cart_id], (err, results) => {
+        if (err) {throw err;}
+        res.status(201).send(`Order created with id: ${results.rows[0].order_id}`);
+    })
+}
+
+const updateOrder = (req, res) => {
+    const id = parseInt(req.params.id);
+    const {date, total_price, user_id, cart_id} = req.body;
+    pool.query('update orders set date = $1, total_price = $2, user_id = $3, cart_id = $4 where order_id = $5', [date, total_price, user_id, cart_id, id], (err, results) => {
+        if (err) {throw err;}
+        res.status(200).send(`User updated with id: ${id}`);
+    })
+}
+
+const deleteOrder = (req, res) => {
+    const id = parseInt(req.params.id);
+    pool.query('delete from orders where order_id = $1', [id], (err, results) => {
+        if (err) {throw err;}
+        res.status(200).send(`Order removed with id: ${id}`);
+    })
+}
+
 const getProducts = (req, res) => {
     pool.query('select * from products order by product_id asc', (err, results) => {
         if (err) {throw err;}
@@ -165,6 +202,11 @@ module.exports = {
     createCart,
     updateCart,
     deleteCart,
+    getOrders,
+    getOrderById,
+    createOrder,
+    updateOrder,
+    deleteOrder,
     getProducts,
     getProductById,
     createProduct,
