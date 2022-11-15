@@ -9,7 +9,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
 const {
-    findUserFromEmail,
+    query,
     getUsers,
     getUserById,
     createUser,
@@ -34,10 +34,6 @@ const {
 
 const port = process.env.PORT;
 
-const routeCall = (req, res, next) => {
-    console.log('Route is called');
-    next();
-}
 // Session middleware
 const store = new session.MemoryStore();
 app.use(session({
@@ -52,12 +48,11 @@ app.use(session({
     store
 }));
 
-//app.use(express.static('./public')); //access files from folder ./public
 // Body parsing
 app.use(bodyParser.json());
 
 // Middleware to initialize passport
-/*
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -65,26 +60,36 @@ passport.serializeUser((user, done) => {
     done(null, user.id);
 })
 
-passport.deserializeUser(async (email, done) => {
-    const [id, userPassword] = await findUserFromEmail(email);
-    done(null, id);
+passport.deserializeUser((id, done) => {
+    query('select * from users where id = $1', [id], (err, results) => {
+        if (err) return done(err);
+    });
+    done(null, user);
 })
 
-passport.use(new LocalStrategy(async (email, password, done) => {
-    const [id, userPassword] = await findUserFromEmail(email);
-    if (password !== userPassword) return done(null, false);
-    return done(null, id);
+passport.use(new LocalStrategy((username, password, done) => {
+    console.log('new LocalStrategy called');
+    query('select * from users where email = $1', [username], (err, results) => {
+        if (err) return done(err);
+        const user = results.rows[0];
+        console.log(user);
+        if (password !== user.password) return done(null, false);
+    })
+    return done(null, user);
 }))
 
+console.log(passport.authenticate);
+
 app.get('/login', (req, res) => {
-    res.render('login');
+    res.json({msg: 'login'});
 })
 
 app.get('/profile', (req, res) => {
-    res.render('profile', {user: req.user});
+    res.json({msg: `user: ${req.user}`});
 })
 
 app.post('/login', passport.authenticate('local', {failureRedirect: '/login'}), (req, res) => {
+    console.log('called');
     res.redirect('/profile');
 })
 
@@ -92,24 +97,32 @@ app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 })
-*/
-// POST request for logging in
-app.post('/login', async (req, res, next) => {
-    const {email, password} = req.body;
-    const user = await findUserFromEmail(email);
-    if (password === user.password) {
-        req.session.authenticated = true;
-        req.session.user = {
-            username: email,
-            password: password
-        };
-        console.log(req.session);
-        res.redirect(`/users/${user.id}`);
-    } else {
-        res.status(403).json({msg: 'Wrong password.'});
-    }
-})
 
+// POST request for logging in
+/*
+app.post('/login', (req, res) => {
+    const {email, password} = req.body;
+    query('select * from users where email = $1', [email], (err, results) => {
+        if (err) {throw err;}
+        if (results.rows.length === 0) {
+            console.log('User not found');
+            res.redirect('/login');
+        }
+        const user = results.rows[0];
+        if (password === user.password) {
+            req.session.authenticated = true;
+            req.session.user = {
+                username: email,
+                password: password
+            };
+            console.log(req.session);
+            res.redirect(`/users/${user.id}`);
+        } else {
+            res.status(403).json({msg: 'Wrong password'});
+        }
+    })
+})
+*/
 const ensureAuthentication = (req, res, next) => {
     console.log(req.session.authenticated);
     if (req.session.authenticated) {
@@ -121,8 +134,7 @@ const ensureAuthentication = (req, res, next) => {
 
 // Routes
 app.get('/', (req, res, next) => {
-    //res.json({info: 'Welcome to this E-commerce API!'});
-    res.send('<h1>Welcome to this e-commerce API!</h1>');
+    res.send('<h1>Welcome to this E-commerce API!</h1>');
 })
 
 app.get('/users', getUsers);
@@ -146,13 +158,6 @@ app.post('/products', createProduct);
 app.put('/products/:id', updateProduct);
 app.delete('/products/:id', deleteProduct);
 
-// Error handler
-app.use((err, req, res, next) => {
-    if (!err.status){
-        err.status = 500;
-    }
-    res.status(err.status).send(err.message);
-});
 
 app.listen(port, () => {
     console.log(`Application listening on port ${port}`);
