@@ -1,4 +1,5 @@
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 
 const Pool = require('pg').Pool;
 const pool = new Pool({
@@ -24,18 +25,12 @@ const getUserById = (req, res) => {
     })
 }
 
-const createUser = (req, res) => {
-    const {first_name, last_name, email} = req.body;
-    pool.query('insert into users (first_name, last_name, email) values ($1, $2, $3) returning *', [first_name, last_name, email], (err, results) => {
-        if (err) {throw err;}
-        res.status(201).send(`User added with id: ${results.rows[0].id}`);
-    })
-}
-
-const updateUser = (req, res) => {
-    const {first_name, last_name, email} = req.body;
+const updateUser = async (req, res) => {
+    const {first_name, last_name, email, password} = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt); 
     const id = parseInt(req.params.id);
-    pool.query('update users set first_name = $1, last_name = $2, email = $3 where id = $4', [first_name, last_name, email, id], (err, results) => {
+    pool.query('update users set first_name = $1, last_name = $2, email = $3, password = $4 where id = $5', [first_name, last_name, email, hashedPassword, id], (err, results) => {
         if (err) {throw err;}
         res.status(200).send(`User updated with id: ${id}`);
     })
@@ -175,7 +170,6 @@ module.exports = {
     },
     getUsers,
     getUserById,
-    createUser,
     updateUser,
     deleteUser,
     getCarts,

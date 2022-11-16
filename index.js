@@ -2,17 +2,16 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./queries.js');
+const db = require('./modules/queries.js');
 const app = express();
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-
+const register = require('./modules/register.js');
 const {
     query,
     getUsers,
     getUserById,
-    createUser,
     updateUser,
     deleteUser,
     getCarts,
@@ -31,6 +30,7 @@ const {
     updateProduct,
     deleteProduct
 } = db;
+const bcrypt = require('bcrypt');
 
 const port = process.env.PORT;
 
@@ -52,7 +52,7 @@ app.use(session({
 app.use(bodyParser.json());
 
 // Middleware to initialize passport
-
+/*
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -97,19 +97,23 @@ app.get('/logout', (req, res) => {
     req.logout();
     res.redirect('/');
 })
+*/
+
+register(app);
 
 // POST request for logging in
-/*
+
 app.post('/login', (req, res) => {
     const {email, password} = req.body;
-    query('select * from users where email = $1', [email], (err, results) => {
+    query('select * from users where email = $1', [email], async (err, results) => {
         if (err) {throw err;}
         if (results.rows.length === 0) {
             console.log('User not found');
             res.redirect('/login');
         }
         const user = results.rows[0];
-        if (password === user.password) {
+        const matchedPassword = await bcrypt.compare(password, user.password);
+        if (matchedPassword) {
             req.session.authenticated = true;
             req.session.user = {
                 username: email,
@@ -122,7 +126,7 @@ app.post('/login', (req, res) => {
         }
     })
 })
-*/
+
 const ensureAuthentication = (req, res, next) => {
     console.log(req.session.authenticated);
     if (req.session.authenticated) {
@@ -139,17 +143,16 @@ app.get('/', (req, res, next) => {
 
 app.get('/users', getUsers);
 app.get('/users/:id', getUserById);
-app.post('/users', createUser);
 app.put('/users/:id', updateUser);
 app.delete('/users/:id', deleteUser);
-app.get('/carts', getCarts);
+app.get('/carts', ensureAuthentication, getCarts);
 app.get('/users/:id/carts', ensureAuthentication, getCartsByUserId);
 app.post('/carts', ensureAuthentication, createCart);
 app.put('/carts/:id', ensureAuthentication, updateCart);
 app.delete('/carts/:id', ensureAuthentication, deleteCart);
 app.get('/orders', ensureAuthentication, getOrders);
 app.get('/orders/:id', ensureAuthentication, getOrderById);
-app.post('/orders', createOrder);
+app.post('/orders', ensureAuthentication, createOrder);
 app.put('/orders/:id', ensureAuthentication, updateOrder);
 app.delete('/orders/:id', ensureAuthentication, deleteOrder);
 app.get('/products', getProducts);

@@ -1,0 +1,504 @@
+openapi: 3.0.1
+info:
+  title: E-commerce API
+  version: 1.0.0
+  description: >-
+    A fully-functioning e-commerce application REST API that allows users to
+    perform various CRUD operations such as registering an account, browsing
+    products for sale, etc.
+paths:
+  /users:
+    summary: Get all the users data.
+    description: >-
+      This path is used to get all the users data from the e_commerce_api
+      database.
+    get:
+      summary: Get the users data.
+      description: Get the users data from the users table.
+      operationId: get_users
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                users:
+                  value: |-
+                    [
+                      {
+                        "id": 1,
+                        "first_name": "James",
+                        "last_name": "Knowles",
+                        "email": "james.k@app.com",
+                        "password": "$2b$10$NjIIdPCoDvrDkf.vJpnD8.fiNYYfrOylUxE8UxjWoaVihZhjrMTNK"
+                      },
+                      {
+                        "id": 2,
+                        "first_name": "Katie",
+                        "last_name": "Griffin",
+                        "email": "katie.griffin@app.com",
+                        "password": "$2b$10$I0EomPSodVuFcUx9sEHi/eHR40wDjmcnuTHbPyBRjLERu53jywGVq"
+                      }
+                    ]
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+  /users/id:
+    summary: Get a user by id
+    description: This path is used to get a user by id from the e_commerce_api database.
+    get:
+      summary: Get a user data by id.
+      description: Get a user data by id from the users table.
+      operationId: get_user
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                users:
+                  value: |-
+                    {
+                      "id": 1,
+                      "first_name": "James",
+                      "last_name": "Knowles",
+                      "email": "james.k@app.com",
+                      "password": "$2b$10$I0EomPSodVuFcUx9sEHi/eHR40wDjmcnuTHbPyBRjLERu53jywGVq"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+    put:
+      summary: Update a user data.
+      description: Update a user data in the users table.
+      operationId: put_user
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                users:
+                  value: |-
+                    {
+                      "msg": "User updated with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+    delete:
+      summary: Delete a user.
+      description: Delete a user from the users table.
+      operationId: delete_user
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                users:
+                  value: |-
+                    {
+                      "msg": "User deleted with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Users
+  /register:
+    summary: Add a user.
+    description: Add a user to the users table.
+    get:
+      summary: Redirect to the register page.
+      description: Redirect to the register page.
+      operationId: get_redirect
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - Register
+    post:
+      summary: Create a user.
+      description: Create a new user in the users table.
+      operationId: post_register
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                users:
+                  value: |-
+                    {
+                      "msg": "User created with id: 1"
+                    }
+        default:
+          description: Default error sample response.
+      tags:
+        - Register
+  /login:
+    summary: Login a user.
+    description: Login a user by creating a session.
+    get:
+      summary: Redirect to the login page.
+      description: Redirect to the login page.
+      operationId: get_login
+      responses:
+        default:
+          description: Default error sample response
+      tags:
+        - Login
+    post:
+      summary: Login a user.
+      description: Login a user and create a user session.
+      operationId: post_login
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                users:
+                  value: |-
+                    {
+                      "msg": "User logged in with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Login
+  /carts:
+    summary: Get the users carts data.
+    description: Get the users carts data from the carts table.
+    get:
+      summary: Get users carts data.
+      description: Get users carts data from tha carts table.
+      operationId: get_carts
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                carts:
+                  value: |-
+                    [
+                      {
+                        "cart_id": 1,
+                        "total_price": 10.40,
+                        "user_id": 7
+                      },
+                      {
+                        "cart_id": 2,
+                        "total_price": 58.60,
+                        "user_id": 2
+                      }
+                    ]
+        default:
+          description: Default error sample response
+      tags:
+        - Carts
+    post:
+      summary: Create a cart.
+      description: Create a cart into the carts table.
+      operationId: post_carts
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                carts:
+                  value: |-
+                    {
+                      "msg": "Cart created with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Carts
+  /users/id/carts:
+    summary: Get carts data for a user by user id.
+    description: >-
+      This path is used to get the carts data for a user by user id from the
+      carts table.
+    get:
+      summary: Get the carts data for a user by user id.
+      description: Get the carts data for a user by user id from tha carts table.
+      operationId: get_users_carts
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                carts:
+                  value: |-
+                    {
+                      "cart_id": 1,
+                      "total_price": 27.00,
+                      "user_id": 3
+                    ]
+        default:
+          description: Default error sample response
+      tags:
+        - Carts
+  /carts/id:
+    summary: Get a cart by id.
+    description: This path is used to get a cart by id from the carts table.
+    put:
+      summary: Update a cart.
+      description: Update a cart by id in the carts table.
+      operationId: put_carts
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                carts:
+                  value: |-
+                    {
+                      "msg": "cart updated with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Carts
+    delete:
+      summary: Delete a cart.
+      description: Delete a cart by id from the carts table.
+      operationId: delete_carts
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                carts:
+                  value: |-
+                    {
+                      "msg": "Cart removed with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Carts
+  /orders:
+    summary: Get orders.
+    description: This path is used to get orders from the orders table.
+    get:
+      summary: Get all orders.
+      description: Get all orders from the orders table.
+      operationId: get_orders
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                orders:
+                  value: |-
+                    [
+                      {
+                        "order_id": 2,
+                        "date": "2022-11-04T00:00:00.000Z",
+                        "total_price": 10,
+                        "cart_id": 7,
+                        "user_id": 9
+                      },
+                      {
+                        "order_id": 3,
+                        "date": "2022-11-04T00:00:00.000Z",
+                        "total_price": 10,
+                        "cart_id": 7,
+                        "user_id": 9
+                      }
+                    ]
+        default:
+          description: Default error sample response
+      tags:
+        - Orders
+    post:
+      summary: Create an order.
+      description: Create an order into the orders table.
+      operationId: post_orders
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                orders:
+                  value: |-
+                    {
+                      "msg": "Order created with id: 3"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Orders
+  /orders/id:
+    summary: Get order by id.
+    description: This path is used to get an order by id from the orders table.
+    get:
+      summary: Get order by id.
+      description: Get order by id from the orders table.
+      operationId: get_order
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                orders:
+                  value: |-
+                    {
+                      "order_id": 2,
+                      "date": "2022-11-04T00:00:00.000Z",
+                      "total_price": 10,
+                      "cart_id": 7,
+                      "user_id": 9
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Orders
+    put:
+      summary: Update an order.
+      description: Update an order in the orders table.
+      operationId: put_orders
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                orders:
+                  value: |-
+                    {
+                      "msg": "Order updated with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Orders
+    delete:
+      summary: Delete order.
+      description: Delete an order from the orders table.
+      operationId: delete_order
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                orders:
+                  value: |-
+                    {
+                      "msg": "Order removed with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Orders
+  /products:
+    summary: Get all products
+    description: This path is used to get all products from the products table.
+    get:
+      summary: Get all products.
+      description: Get all products from the products table.
+      operationId: get_products
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                products:
+                  value: |-
+                    [
+                      {
+                        "product_id": 1,
+                        "name": "Clevo Laptop L140PU",
+                        "category": "laptop",
+                        "price": 1032,
+                        "description": null
+                      },
+                      {
+                        "product_id": 2,
+                        "name": "Road bike Triban 520",
+                        "category": "Bicycle",
+                        "price": 500,
+                        "description": "Size M, color red"
+                      }
+                    ]
+        default:
+          description: Default error sample response
+      tags:
+        - Products
+    post:
+      summary: Create a product.
+      description: Create a product into the products table.
+      operationId: post_products
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                products:
+                  value: |-
+                    {
+                      "msg": "Product created with id: 1"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Products
+  /products/id:
+    summary: Get a product.
+    description: This path is used to get a product from the products table.
+    get:
+      summary: Get a product.
+      description: Get a product from the products table.
+      operationId: get_product
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                products:
+                  value: |-
+                    {
+                      "product_id": 1,
+                      "name": "Clevo Laptop L140PU",
+                      "category": "laptop",
+                      "price": 1032,
+                      "description": null
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Products
+    put:
+      summary: Update a product.
+      description: Update a product in the products table.
+      operationId: put_product
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                products:
+                  value: |-
+                    {
+                      "msg": "Product updated with id 5"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Products
+    delete:
+      summary: Delete a product.
+      description: Delete a product from the products table.
+      operationId: delete_product
+      responses:
+        '200':
+          content:
+            application/json:
+              examples:
+                products:
+                  value: |-
+                    {
+                      "msg": "Product removed with id: 6"
+                    }
+        default:
+          description: Default error sample response
+      tags:
+        - Products
