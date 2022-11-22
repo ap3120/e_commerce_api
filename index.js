@@ -2,38 +2,31 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./modules/queries.js');
+const db = require('./model/queries.js');
 const app = express();
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const register = require('./modules/register.js');
-const {
-    query,
-    getUsers,
-    getUserById,
-    updateUser,
-    deleteUser,
-    getCarts,
-    getCartsByUserId,
-    createCart,
-    updateCart,
-    deleteCart,
-    getOrders,
-    getOrderById,
-    createOrder,
-    updateOrder,
-    deleteOrder,
-    getProducts,
-    getProductById,
-    createProduct,
-    updateProduct,
-    deleteProduct
-} = db;
+const usersRouter = require('./routes/users.js').router;
+const cartsRouter = require('./routes/carts.js').router;
+const ordersRouter = require('./routes/orders.js').router;
+const productsRouter = require('./routes/products.js').router;
 const bcrypt = require('bcrypt');
+//const cors = require('cors');
+//app.use(cors);
+app.use(express.json());
+
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+next();
+});
 
 const port = process.env.PORT;
-
+// Getting information from forms
+app.use(express.urlencoded({extended: false}))
 // Session middleware
 const store = new session.MemoryStore();
 app.use(session({
@@ -99,33 +92,15 @@ app.get('/logout', (req, res) => {
 })
 */
 
-register(app);
+app.use('/', usersRouter);
+app.use('/carts', cartsRouter);
+app.use('/orders', ordersRouter);
+app.use('/products', productsRouter);
 
-// POST request for logging in
-
-app.post('/login', (req, res) => {
-    const {email, password} = req.body;
-    query('select * from users where email = $1', [email], async (err, results) => {
-        if (err) {throw err;}
-        if (results.rows.length === 0) {
-            console.log('User not found');
-            res.redirect('/login');
-        }
-        const user = results.rows[0];
-        const matchedPassword = await bcrypt.compare(password, user.password);
-        if (matchedPassword) {
-            req.session.authenticated = true;
-            req.session.user = {
-                username: email,
-                password: password
-            };
-            console.log(req.session);
-            res.redirect(`/users/${user.id}`);
-        } else {
-            res.status(403).json({msg: 'Wrong password'});
-        }
-    })
+app.get('/', (req, res) => {
+    res.json({msg: 'running'});
 })
+
 
 const ensureAuthentication = (req, res, next) => {
     console.log(req.session.authenticated);
@@ -135,32 +110,6 @@ const ensureAuthentication = (req, res, next) => {
         res.status(403).json({msg: 'Please login to view this page.'});
     }
 }
-
-// Routes
-app.get('/', (req, res, next) => {
-    res.send('<h1>Welcome to this E-commerce API!</h1>');
-})
-
-app.get('/users', getUsers);
-app.get('/users/:id', getUserById);
-app.put('/users/:id', updateUser);
-app.delete('/users/:id', deleteUser);
-app.get('/carts', ensureAuthentication, getCarts);
-app.get('/users/:id/carts', ensureAuthentication, getCartsByUserId);
-app.post('/carts', ensureAuthentication, createCart);
-app.put('/carts/:id', ensureAuthentication, updateCart);
-app.delete('/carts/:id', ensureAuthentication, deleteCart);
-app.get('/orders', ensureAuthentication, getOrders);
-app.get('/orders/:id', ensureAuthentication, getOrderById);
-app.post('/orders', ensureAuthentication, createOrder);
-app.put('/orders/:id', ensureAuthentication, updateOrder);
-app.delete('/orders/:id', ensureAuthentication, deleteOrder);
-app.get('/products', getProducts);
-app.get('/products/:id', getProductById);
-app.post('/products', createProduct);
-app.put('/products/:id', updateProduct);
-app.delete('/products/:id', deleteProduct);
-
 
 app.listen(port, () => {
     console.log(`Application listening on port ${port}`);
