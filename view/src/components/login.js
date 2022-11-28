@@ -12,7 +12,6 @@ export const Login = () => {
             <Card sx={{width: 400}}>
                 <form className='center-container'>
                     <Box
-                        component="form"
                         sx={{'& .MuiTextField-root': { m: 1, width: '25ch' },}}
                         noValidate
                         autoComplete="off"

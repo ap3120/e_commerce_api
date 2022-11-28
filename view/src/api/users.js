@@ -10,12 +10,11 @@ export const registerUser = async (firstName, lastName, email, password) => {
             password: password
         }),
         headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
             //"Access-Control-Allow-Origin": "*",
             //"Access-Control-Allow-Credentials": true
         }
     });
-    console.log(response);
     const newUser = await response.json();
     return newUser;
 }

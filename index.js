@@ -12,17 +12,18 @@ const cartsRouter = require('./routes/carts.js').router;
 const ordersRouter = require('./routes/orders.js').router;
 const productsRouter = require('./routes/products.js').router;
 const bcrypt = require('bcrypt');
-//const cors = require('cors');
-//app.use(cors);
+const cors = require('cors');
+app.use(cors());
 app.use(express.json());
 
-app.use(function (req, res, next) {
+/*app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.setHeader('Access-Control-Allow-Credentials', true);
 next();
 });
+*/
 
 const port = process.env.PORT;
 // Getting information from forms

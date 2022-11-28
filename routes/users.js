@@ -18,18 +18,18 @@ const checkIfUserExists = (email) => {
 
 
 router.post('/register', async (req, res) => {
-    console.log('called2');
     const {first_name, last_name, email, password} = req.body;
     const userExist = await checkIfUserExists(email);
     if (userExist === true) {
-        console.log('User already exists.');
-        return res.redirect('/login');
+        console.log('User already exist.');
+        return res.json({msg: `User ${email} already exist.`});
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     query('insert into users (first_name, last_name, email, password) values ($1, $2, $3, $4) returning *', [first_name, last_name, email, hashedPassword], (err, results) => {
         if (err) {throw err;}
-        res.status(201).send(`User added with id: ${results.rows[0].id}`);
+        console.log(results.rows[0]);
+        res.status(201).json(results.rows[0]);
     })
 })
 
