@@ -5,6 +5,7 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Button, CardActionArea, CardActions } from '@mui/material';
 import '../App.css';
+import {Link} from 'react-router-dom';
 
 export const Home = () => {
     return (
@@ -24,9 +25,11 @@ export const Home = () => {
                         </CardContent>
                     </CardActionArea>
                     <CardActions>
-                        <Button size="small" color="primary">
-                            View laptops
-                        </Button>
+                        <Link to='/laptops' className='navlink'>
+                            <Button size="small" color="primary">
+                                View laptops
+                            </Button>
+                        </Link>
                     </CardActions>
                 </Card>
                 <Card sx={{ width: 400, height: 550, textAlign: 'center', margin: 5}}>
@@ -42,9 +45,11 @@ export const Home = () => {
                         </CardContent>
                     </CardActionArea>
                     <CardActions>
-                        <Button size="small" color="primary">
-                            View smartphones
-                        </Button>
+                        <Link to='/smartphones' className='navlink'>
+                            <Button size="small" color="primary">
+                                View smartphones
+                            </Button>
+                        </Link>
                     </CardActions>
                 </Card>
                 <Card sx={{ width: 400, height: 550, textAlign: 'center', margin: 5}}>
@@ -60,9 +65,11 @@ export const Home = () => {
                         </CardContent>
                     </CardActionArea>
                     <CardActions>
-                        <Button size="small" color="primary">
-                            View accessories
-                        </Button>
+                        <Link to='/accessories' className='navlink'>
+                            <Button size="small" color="primary">
+                                View accessories
+                            </Button>
+                        </Link>
                     </CardActions>
                 </Card>
             </div>

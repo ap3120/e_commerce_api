@@ -11,3 +11,8 @@
     align-items: center;
     justify-content: center;
 }
+.navlink {
+    text-decoration: none;
+    color: #000;
+}
+

@@ -8,7 +8,7 @@ import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import '../App.css';
 import {registerUser} from '../api/users.js';
-
+import {NavLink} from 'react-router-dom';
 
 export const Register = () => {
     const [newFirstName, setNewFirstName] = useState('');
@@ -118,7 +118,7 @@ export const Register = () => {
                         </div>
                     </Box>
                     <Button type='submit' variant='contained'>Register Now</Button>
-                    <p>Already have an account, login <a href='/login'>here.</a></p>
+                    <p>Already have an account, login <NavLink to='/login'>here.</NavLink></p>
                 </form>
             </Card>
             <Snackbar open={openSuccess} autoHideDuration={3000} onClose={handleCloseSuccess} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}>

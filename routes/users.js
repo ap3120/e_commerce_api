@@ -34,11 +34,11 @@ router.post('/register', async (req, res) => {
         res.status(201).json(results.rows[0]);
     })
 })
-
+/*
 router.get('/register', (req, res) => {
     res.redirect('/register');
 })
-
+*/
 router.use(passport.initialize());
 router.use(passport.session());
 
@@ -73,15 +73,19 @@ router.post('/login', passport.authenticate('local', {failWithError: true}), (re
     res.json({msg: 'Invalid credentials.'});
 })
 
-router.get('/logout', (req, res) => {
-    req.logout();
-    res.redirect('/');
+router.get('/logout', (req, res, next) => {
+    console.log('called');
+    console.log(req.session);
+    req.logout((err) => {
+        if (err) return next(err);
+        res.json({msg: 'Successfully logged out.'});
+    });
 })
-
+/*
 router.get('/login', (req, res) => {
     res.redirect('/login');
 })
-
+*/
 router.get('/users', (req, res) => {
     query('select * from users order by id asc', (err, results) => {
         if (err) {throw err}

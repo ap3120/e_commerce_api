@@ -30,8 +30,12 @@ export const loginUser = async (username, password) => {
             "Content-Type": "application/json"
         }
     });
-    console.log(`my response: ${response}`);
     const session = await response.json();
     return session;
 }
 
+export const logoutUser = async () => {
+    const response = await fetch(`${API_ENDPOINT}/logout`);
+    const jsonResponse = await response.json();
+    return jsonResponse;
+}

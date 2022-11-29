@@ -10,6 +10,7 @@ import '../App.css';
 import {loginUser} from '../api/users.js';
 import {login} from '../app/authenticationSlice.js';
 import {useSelector, useDispatch} from 'react-redux';
+import {NavLink} from 'react-router-dom';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -79,7 +80,7 @@ export const Login = () => {
                         </div>
                     </Box>
                     <Button type='submit' variant='contained'>Login</Button>
-                    <p>Don't have an account yet, register <a href='/register'>here.</a></p>
+                    <p>Don't have an account yet, register <NavLink to='/register'>here.</NavLink></p>
                 </form>
             </Card>
             <Snackbar open={open} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}>
