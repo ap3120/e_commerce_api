@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const query = require('../model/queries.js').query;
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
 const checkIfUserExists = (email) => {
     return new Promise((resolve, reject) => {
@@ -37,28 +39,43 @@ router.get('/register', (req, res) => {
     res.redirect('/register');
 })
 
-router.post('/login', (req, res) => {
-    const {email, password} = req.body;
-    query('select * from users where email = $1', [email], async (err, results) => {
-        if (err) {throw err;}
-        if (results.rows.length === 0) {
-            console.log('User not found');
-            res.redirect('/login');
-        }
+router.use(passport.initialize());
+router.use(passport.session());
+
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+})
+
+passport.deserializeUser((id, done) => {
+    query('select * from users where id = $1', [id], (err, results) => {
+        if (err) return done(err);
+    });
+    done(null, user);
+})
+
+passport.use(new LocalStrategy((username, password, done) => {
+    query('select * from users where email = $1', [username], async (err, results) => {
+        if (err) return done(err);
         const user = results.rows[0];
+        if (! user) return done(null, false);
         const matchedPassword = await bcrypt.compare(password, user.password);
-        if (matchedPassword) {
-            req.session.authenticated = true;
-            req.session.user = {
-                username: email,
-                password: password
-            };
-            console.log(req.session);
-            res.redirect(`/users/${user.id}`);
-        } else {
-            res.status(403).json({msg: 'Wrong password'});
-        }
+        if (! matchedPassword) return done(null, false);
+        return done(null, user);
     })
+}))
+
+router.post('/login', passport.authenticate('local', {failWithError: true}), (req, res) => {
+    if (req.session) {
+        console.log(req.session);
+        res.json({user: req.user, session: req.session});
+    }
+}, (err, req, res, next) => {
+    res.json({msg: 'Invalid credentials.'});
+})
+
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
 })
 
 router.get('/login', (req, res) => {

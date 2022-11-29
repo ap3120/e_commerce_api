@@ -11,15 +11,26 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import {useSelector} from 'react-redux';
 
 const pages = ['Products', 'Carts', 'Orders'];
-const settings = ['Profile', 'Carts', 'Orders', 'Logout'];
 const products = ['Laptops', 'Smartphones', 'Accessories'];
 
 export const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [anchorElProducts, setAnchorElProducts] = React.useState(null);
+    const [settings, setSettings] = React.useState(['Register', 'Login']);
+    const isLoggedIn = useSelector(state => state.authentication.isLoggedIn);
+    const user = useSelector(state => state.authentication.user);
+
+    React.useEffect(() => {
+        if (isLoggedIn) {
+            setSettings([user.first_name, 'Orders', 'Logout'])
+        } else {
+            setSettings(['Register', 'Login']);
+        }
+    }, [isLoggedIn])
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -46,23 +57,9 @@ export const Navbar = () => {
     <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            PERN APP
-          </Typography>
+          <Box sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}>
+          <a href='/'><img src={require('../images/logo.png')} width={40} /></a>
+          </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -90,7 +87,7 @@ export const Navbar = () => {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                  display: { xs: 'block', md: 'none' },
               }}
             >
                 {pages.map(page => 
@@ -100,24 +97,9 @@ export const Navbar = () => {
               )}
             </Menu>
           </Box>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            PERN APP
-          </Typography>
+          <Box sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}>
+          <a href='/'><img src={require('../images/logo.png')} width={40} /></a>
+          </Box>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => page === 'Products' ? (
             <div key={page}>
@@ -143,7 +125,7 @@ export const Navbar = () => {
               onClose={handleCloseProductsMenu}
             >
               {products.map((product) => (
-                <MenuItem key={product} onClick={handleCloseUserMenu}>
+                <MenuItem key={product} onClick={handleCloseProductsMenu}>
                   <Typography textAlign="center">{product}</Typography>
                 </MenuItem>
               ))}

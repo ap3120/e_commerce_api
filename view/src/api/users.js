@@ -19,4 +19,19 @@ export const registerUser = async (firstName, lastName, email, password) => {
     return newUser;
 }
 
+export const loginUser = async (username, password) => {
+    const response = await fetch(`${API_ENDPOINT}/login`, {
+        method: 'POST',
+        body: JSON.stringify({
+            username: username,
+            password: password
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    console.log(`my response: ${response}`);
+    const session = await response.json();
+    return session;
+}
 
