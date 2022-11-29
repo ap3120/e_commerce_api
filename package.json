@@ -20,6 +20,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "pg": "^8.8.0",
-    "react-router-dom": "^6.4.3"
+    "react-router-dom": "^6.4.3",
+    "redux-persist": "^6.0.0"
   }
 }
