@@ -53,7 +53,6 @@ app.get('/', (req, res) => {
     res.json({msg: 'running'});
 })
 
-
 const ensureAuthentication = (req, res, next) => {
     console.log(req.session.authenticated);
     if (req.session.passport) {

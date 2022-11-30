@@ -4,6 +4,7 @@ const query = require('../model/queries.js').query;
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const {ensureAuthentication, ensureNotAuthentication} = require('./util/auth.js');
 
 const checkIfUserExists = (email) => {
     return new Promise((resolve, reject) => {
@@ -19,26 +20,20 @@ const checkIfUserExists = (email) => {
 }
 
 
-router.post('/register', async (req, res) => {
+router.post('/register', ensureNotAuthentication, async (req, res) => {
     const {first_name, last_name, email, password} = req.body;
     const userExist = await checkIfUserExists(email);
     if (userExist === true) {
-        console.log('User already exist.');
         return res.json({msg: `User ${email} already exist.`});
     }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     query('insert into users (first_name, last_name, email, password) values ($1, $2, $3, $4) returning *', [first_name, last_name, email, hashedPassword], (err, results) => {
         if (err) {throw err;}
-        console.log(results.rows[0]);
         res.status(201).json(results.rows[0]);
     })
 })
-/*
-router.get('/register', (req, res) => {
-    res.redirect('/register');
-})
-*/
+
 router.use(passport.initialize());
 router.use(passport.session());
 
@@ -49,8 +44,8 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((id, done) => {
     query('select * from users where id = $1', [id], (err, results) => {
         if (err) return done(err);
+        done(null, results.rows[0]);
     });
-    done(null, user);
 })
 
 passport.use(new LocalStrategy((username, password, done) => {
@@ -64,9 +59,8 @@ passport.use(new LocalStrategy((username, password, done) => {
     })
 }))
 
-router.post('/login', passport.authenticate('local', {failWithError: true}), (req, res) => {
+router.post('/login', ensureNotAuthentication, passport.authenticate('local', {failWithError: true}), (req, res) => {
     if (req.session) {
-        console.log(req.session);
         res.json({user: req.user, session: req.session});
     }
 }, (err, req, res, next) => {
@@ -74,19 +68,13 @@ router.post('/login', passport.authenticate('local', {failWithError: true}), (re
 })
 
 router.get('/logout', (req, res, next) => {
-    console.log('called');
-    console.log(req.session);
     req.logout((err) => {
         if (err) return next(err);
         res.json({msg: 'Successfully logged out.'});
     });
 })
-/*
-router.get('/login', (req, res) => {
-    res.redirect('/login');
-})
-*/
-router.get('/users', (req, res) => {
+
+router.get('/users', ensureAuthentication, (req, res) => {
     query('select * from users order by id asc', (err, results) => {
         if (err) {throw err}
         res.status(200).json(results.rows);

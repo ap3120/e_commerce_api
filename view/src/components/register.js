@@ -8,7 +8,8 @@ import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import '../App.css';
 import {registerUser} from '../api/users.js';
-import {NavLink} from 'react-router-dom';
+import {NavLink, Navigate} from 'react-router-dom';
+import {useSelector} from 'react-redux';
 
 export const Register = () => {
     const [newFirstName, setNewFirstName] = useState('');
@@ -25,6 +26,7 @@ export const Register = () => {
         email: ''
     });
     const [existingEmail, setExistingEmail] = useState('');
+    const isLoggedIn = useSelector(state => state.authentication.isLoggedIn);
 
     const validate = () => {
         let temp = {};
@@ -68,6 +70,9 @@ export const Register = () => {
         }
         setOpenError(false);
     }
+
+    if (isLoggedIn) return (<Navigate to='/' />);
+
     return (
         <div className='center-container'>
             <h1>Register</h1>

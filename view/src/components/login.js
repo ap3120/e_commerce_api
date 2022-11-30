@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
@@ -10,7 +10,7 @@ import '../App.css';
 import {loginUser} from '../api/users.js';
 import {login} from '../app/authenticationSlice.js';
 import {useSelector, useDispatch} from 'react-redux';
-import {NavLink} from 'react-router-dom';
+import {NavLink, Navigate} from 'react-router-dom';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -19,10 +19,6 @@ export const Login = () => {
     const [open, setOpen] = useState(false);
     const dispatch = useDispatch();
     const isLoggedIn = useSelector(state => state.authentication.isLoggedIn);
-
-    useEffect(() => {
-        console.log(isLoggedIn);
-    }, [isLoggedIn]);
 
     const validate = () => {
         let temp = {};
@@ -50,6 +46,8 @@ export const Login = () => {
         }
         setOpen(false);
     }
+    
+    if (isLoggedIn) return (<Navigate to='/' />);
 
     return (
         <div className='center-container'>

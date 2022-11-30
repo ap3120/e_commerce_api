@@ -1,6 +1,5 @@
 .env
-db.png
-e-commerce-db.erdplus
+*.swp
 
 # dependencies
 /node_modules
