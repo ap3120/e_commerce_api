@@ -4,9 +4,12 @@ import {combineReducers} from 'redux';
 import {persistReducer} from 'redux-persist';
 import thunk from 'redux-thunk';
 import authenticationReducer from './authenticationSlice.js';
+import cartReducer from './cartSlice.js';
+
 
 const reducers = combineReducers({
     authentication: authenticationReducer,
+    cart: cartReducer,
 });
 
 const persistConfig = {
@@ -21,3 +24,4 @@ export const store = configureStore({
     devTools: true,
     middleware: [thunk],
 });
+

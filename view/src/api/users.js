@@ -11,8 +11,6 @@ export const registerUser = async (firstName, lastName, email, password) => {
         }),
         headers: {
             "Content-Type": "application/json"
-            //"Access-Control-Allow-Origin": "*",
-            //"Access-Control-Allow-Credentials": true
         }
     });
     const newUser = await response.json();
@@ -36,6 +34,35 @@ export const loginUser = async (username, password) => {
 
 export const logoutUser = async () => {
     const response = await fetch(`${API_ENDPOINT}/logout`);
+    const jsonResponse = await response.json();
+    return jsonResponse;
+}
+
+export const updatePassword = async (id, password, newPassword) => {
+    const response = await fetch(`${API_ENDPOINT}/users/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            password: password,
+            newPassword: newPassword
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+    const jsonResponse = await response.json();
+    return jsonResponse;
+}
+
+export const deleteUser = async (id, password) => {
+    const response = await fetch(`${API_ENDPOINT}/users/${id}`, {
+        method: 'DELETE',
+        body: JSON.stringify({
+            password: password
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
     const jsonResponse = await response.json();
     return jsonResponse;
 }

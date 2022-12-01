@@ -81,23 +81,46 @@ router.get('/users', ensureAuthentication, (req, res) => {
     })
 })
 
-router.put('/users/:id', async (req, res) => {
-    const {first_name, last_name, email, password} = req.body;
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt); 
-    const id = parseInt(req.params.id);
-    query('update users set first_name = $1, last_name = $2, email = $3, password = $4 where id = $5', [first_name, last_name, email, hashedPassword, id], (err, results) => {
-        if (err) {throw err;}
-        res.status(200).send(`User updated with id: ${id}`);
+const getPassword = (id) => {
+    return new Promise ((resolve, reject) => {
+        query('select * from users where id = $1', [id], (err, results) => {
+            if (err) {reject(err);}
+            if (results.rows[0].length === 0) {reject(false)}
+            resolve(results.rows[0].password);
+        })
     })
+}
+
+router.put('/users/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const {password, newPassword} = req.body;
+    const pw = await getPassword(id);
+    const matchedPassword = await bcrypt.compare(password, pw);
+    if (matchedPassword) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt); 
+        query('update users set password = $1 where id = $2', [hashedPassword, id], (err, results) => {
+            if (err) {throw err;}
+            return res.status(200).json({msg: 'Password successfully updated.'});
+        })
+    } else {
+        res.status(403).json({msg: 'Incorrect password'});
+    }
 })
 
-router.delete('/users/:id', (req, res) => {
+router.delete('/users/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    pool.query('delete from users where id = $1', [id], (err, results) => {
-        if (err) {throw err;}
-        res.status(200).send(`User removed with id: ${id}`);
-    })
+    const {password} = req.body;
+    const pw = await getPassword(id);
+    const matchedPassword = await bcrypt.compare(password, pw);
+    if (matchedPassword) {
+        query('delete from users where id = $1', [id], (err, results) => {
+            if (err) {throw err;}
+            return res.status(200).json({msg: 'User successfully deleted.'});
+        })
+    } else {
+        res.status(403).json({msg: 'Incorrect password.'})
+    }
 })
 
 exports.router = router;

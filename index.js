@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const session = require('express-session');
 const usersRouter = require('./routes/users.js').router;
-const cartsRouter = require('./routes/carts.js').router;
 const ordersRouter = require('./routes/orders.js').router;
 const productsRouter = require('./routes/products.js').router;
 //const bcrypt = require('bcrypt');
@@ -45,7 +44,6 @@ app.use(bodyParser.json());
 
 
 app.use('/', usersRouter);
-app.use('/carts', cartsRouter);
 app.use('/orders', ordersRouter);
 app.use('/products', productsRouter);
 

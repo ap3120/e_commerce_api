@@ -60,7 +60,6 @@ export const Navbar = () => {
     const handleLogout = async () => {
         setAnchorElUser(null);
         const response = await logoutUser();
-        console.log(`logout res: ${response.msg}`);
         if (response.msg === 'Successfully logged out.') {
             dispatch(logout());
         }
