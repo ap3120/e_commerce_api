@@ -4,12 +4,13 @@ import {useEffect} from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {useNavigate} from 'react-router-dom';
-
+import {createOrder} from '../api/orders.js';
 import '../App.css';
 
 export const Cart = () => {
     const cart = useSelector(state => state.cart);
     const isLoggedIn = useSelector(state => state.authentication.isLoggedIn);
+    const user = useSelector(state => state.authentication.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -56,9 +57,17 @@ export const Cart = () => {
         dispatch(removeFromCart({product: product, price: item.price}));
     }
 
-    const confirmCart = () => {
+    const confirmCart = async () => {
         if (isLoggedIn) {
-            window.alert('confirm');
+            const date = JSON.stringify(new Date());
+            const total_price = cart.total_price;
+            const user_id = user.id;
+            const products = cart.products_list;
+            const response = await createOrder(date, total_price, user_id, products);
+            if (response.msg === 'Order successfully created.') {
+                navigate('/orders');
+                dispatch(deleteCart());
+            }
         } else {
             navigate('/login');
         }

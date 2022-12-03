@@ -48,7 +48,6 @@ export const Login = () => {
     }
     
     if (isLoggedIn) return (<Navigate to='/' />);
-
     return (
         <div className='center-container'>
             <h1>Login</h1>
