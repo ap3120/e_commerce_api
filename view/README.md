@@ -8,8 +8,11 @@ In the project directory, you can run:
 
 ### `npm start`
 
+Before running the project, run the server by running `npm run devStart` in the root of directory (./E-commerce).
+For the server to run correctly, a postgres database needs to be implemented. See the file database.txt to understand how to build the database, and enter your database secrets in the .env file of the root directory.
 Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The server runs on [http://localhost:3000](http://localhost:3000) by default so when running the frontend, you will be prompted to run on a different port.
+Open [http://localhost:3001](http://localhost:3001) to view it in your browser.
 
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
