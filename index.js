@@ -22,7 +22,7 @@ next();
 });
 */
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 // Getting information from forms
 app.use(express.urlencoded({extended: false}))
 // Session middleware
