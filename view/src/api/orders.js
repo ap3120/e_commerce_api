@@ -1,13 +1,13 @@
 const API_ENDPOINT = 'http://localhost:3000';
 
 export const getOrdersByUserId = async (id) => {
-    const response = await fetch(`${API_ENDPOINT}/orders/${id}`);
+    const response = await fetch(`/orders/${id}`);
     const jsonResponse = await response.json();
     return jsonResponse;
 }
 
 export const createOrder = async (date, total_price, user_id, products) => {
-    const response = await fetch(`${API_ENDPOINT}/orders`, {
+    const response = await fetch(`/orders`, {
         method: 'POST',
         body: JSON.stringify({
             date: date,
@@ -24,7 +24,7 @@ export const createOrder = async (date, total_price, user_id, products) => {
 }
 
 export const getProductsByOrderId = async (id) => {
-    const response = await fetch(`${API_ENDPOINT}/orders/orders_products/${id}`);
+    const response = await fetch(`/orders/orders_products/${id}`);
     const jsonResponse = await response.json();
     return jsonResponse;
 }

@@ -1,7 +1,7 @@
 const API_ENDPOINT = 'http://localhost:3000';
 
 export const registerUser = async (firstName, lastName, email, password) => {
-    const response = await fetch(`${API_ENDPOINT}/register`, {
+    const response = await fetch(`/register`, {
         method: 'POST',
         body: JSON.stringify({
             first_name: firstName,
@@ -18,7 +18,7 @@ export const registerUser = async (firstName, lastName, email, password) => {
 }
 
 export const loginUser = async (username, password) => {
-    const response = await fetch(`${API_ENDPOINT}/login`, {
+    const response = await fetch(`/login`, {
         method: 'POST',
         body: JSON.stringify({
             username: username,
@@ -33,13 +33,13 @@ export const loginUser = async (username, password) => {
 }
 
 export const logoutUser = async () => {
-    const response = await fetch(`${API_ENDPOINT}/logout`);
+    const response = await fetch(`/logout`);
     const jsonResponse = await response.json();
     return jsonResponse;
 }
 
 export const updatePassword = async (id, password, newPassword) => {
-    const response = await fetch(`${API_ENDPOINT}/users/${id}`, {
+    const response = await fetch(`/users/${id}`, {
         method: 'PUT',
         body: JSON.stringify({
             password: password,
@@ -54,7 +54,7 @@ export const updatePassword = async (id, password, newPassword) => {
 }
 
 export const deleteUser = async (id, password) => {
-    const response = await fetch(`${API_ENDPOINT}/users/${id}`, {
+    const response = await fetch(`/users/${id}`, {
         method: 'DELETE',
         body: JSON.stringify({
             password: password
