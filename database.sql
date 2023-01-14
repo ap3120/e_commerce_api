@@ -1,0 +1,20 @@
+create table users (id serial primary key, first_name varchar(50), last_name varchar(50), email varchar(100) not null unique, password varchar(100) not null);
+create table orders (order_id serial primary key, date date, total_price float, user_id integer references users(id) on delete cascade);
+create table products (product_id serial primary key, name varchar(50) not null, category varchar(50) not null, price float not null, description varchar(500), image_url varchar(250) not null);
+create table orders_products (order_id integer references orders(order_id) on delete cascade, product_id integer references products(product_id) on delete cascade);
+insert into products (name, category, price, image_url) values ('HP Omen X Gaming Laptop', 'laptops', 1999, 'hp-omen-x-laptop.webp');
+insert into products (name, category, price, image_url) values ('Samsung A 20-e', 'smartphones', 289, 'samsung-a-20-e.jpeg');
+insert into products (name, category, price, image_url) values ('ThinkPad L13 Yoga Gen 3', 'laptops', 918, 'thinkpad-l13-yoga-gen3.webp');
+insert into products (name, category, price, image_url) values ('Librem 14', 'laptops', 1170, 'librem14.png');
+insert into products (name, category, price, image_url) values ('Asus Chromebook CX9', 'laptops', 1239, 'asus-chromebook-cx9.png');
+insert into products (name, category, price, image_url) values ('Lemur Pro', 'laptops', 1149, 'lemur-pro.avif');
+insert into products (name, category, price, image_url) values ('Galaxy S22 5G', 'smartphones', 769, 'galaxy-s22-5g.webp');
+insert into products (name, category, price, image_url) values ('Nokia G60 5G', 'smartphones', 249, 'nokia-g60-5g.avif');
+insert into products (name, category, price, image_url) values ('Iphone 13', 'smartphones', 649, 'iphone-13.jpeg');
+insert into products (name, category, price, image_url) values ('Huawei Mate 50 Pro Silver', 'smartphones', 1199, 'huawei-mate-50-pro-silver.png');
+insert into products (name, category, price, image_url) values ('Keyboard', 'accessories', 83, 'keyboard.webp');
+insert into products (name, category, price, image_url) values ('Mice', 'accessories', 6.99, 'mice.webp');
+insert into products (name, category, price, image_url) values ('USB Charger type C', 'accessories', 9.99, 'usb-charger-type-c.webp');
+insert into products (name, category, price, image_url) values ('10 m ethernet cable', 'accessories', 11.99, 'ethernet-cable.webp');
+insert into products (name, category, price, image_url) values ('Sandisk USB', 'accessories', 3.89, 'sandisk-usb.jpeg');
+
