@@ -12,7 +12,7 @@ const devConf = {
 }
 // Production configuration
 const prodConf = {
-    connectionString: process.env.DATABASE_URI
+    connectionString: process.env.DATABASE_URL
 }
 
 const pool = new Pool(process.env.NODE_ENV === 'production' ? prodConf : devConf);
