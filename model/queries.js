@@ -1,5 +1,4 @@
 require('dotenv').config();
-const bcrypt = require('bcrypt');
 
 const Pool = require('pg').Pool;
 // Local development configuration
@@ -12,7 +11,10 @@ const devConf = {
 }
 // Production configuration
 const prodConf = {
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 }
 
 const pool = new Pool(process.env.NODE_ENV === 'production' ? prodConf : devConf);
