@@ -59,10 +59,7 @@ export const Profile = () => {
         if (validateDeleteAccount()) {
             const response = await deleteUser(user.id, currentPassword2);
             if (response.msg === 'User successfully deleted.') {
-                const resp = await logoutUser();
-                if (resp.msg === 'Successfully logged out.') {
-                    dispatch(logout());
-                }
+                dispatch(logout());
             } else if (response.msg === 'Incorrect password.') {
                 setOpenWrongPassword(true);
             } else {
